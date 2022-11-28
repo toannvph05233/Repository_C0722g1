@@ -1,11 +1,13 @@
 package codegym.config;
 
+import codegym.validate.ValidateStudent;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -35,10 +37,10 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @ComponentScan("codegym")
-
 @EnableSpringDataWebSupport
 @EnableJpaRepositories("codegym.repository")
 @EnableTransactionManagement
+@EnableAspectJAutoProxy
 public class ApplicationConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -55,6 +57,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
         templateResolver.setApplicationContext(applicationContext);
         templateResolver.setPrefix("/WEB-INF/views/");
         templateResolver.setSuffix(".html");
+        templateResolver.setCharacterEncoding("UTF-8");
         templateResolver.setTemplateMode(TemplateMode.HTML);
         return templateResolver;
     }
@@ -69,6 +72,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
     @Bean
     public ThymeleafViewResolver viewResolver() {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setCharacterEncoding("UTF-8");
         viewResolver.setTemplateEngine((ISpringTemplateEngine) templateEngine());
         return viewResolver;
     }
@@ -131,6 +135,6 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
     }
-
 //   hết Cấu hình để kết nối CSDL
+
 }

@@ -9,7 +9,11 @@
     <table>
         <tr>
             <td><input th:field="*{name}"></td>
+            <td style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
+
             <td><input th:field="*{age}"></td>
+            <td style="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></td>
+
             <td><input type="text" th:field="*{img}"></td>
             <td>
                 <select name="id_ClassRoom">

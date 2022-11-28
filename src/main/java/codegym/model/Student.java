@@ -1,6 +1,9 @@
 package codegym.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 
 @Entity
@@ -8,8 +11,12 @@ public class Student {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
+    @Size(min = 5, max = 20, message = "Tên sai định dạng")
     private String name;
     private String img;
+
+    @Min(value = 18, message = "Tuổi phải trên 18")
+    @Max(value = 80, message = "già quá rồi")
     private int age;
     @ManyToOne
     private ClassRoom classRoom;

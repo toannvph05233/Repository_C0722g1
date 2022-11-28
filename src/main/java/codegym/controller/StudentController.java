@@ -4,14 +4,19 @@ import codegym.model.ClassRoom;
 import codegym.model.Student;
 import codegym.repository.IClassRoomRepo;
 import codegym.repository.IStudentRepo;
+import codegym.validate.ValidateStudent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -23,12 +28,15 @@ public class StudentController {
     @Autowired
     IClassRoomRepo iClassRoomRepo;
 
+    @Autowired
+    ValidateStudent validateStudent;
+
     @GetMapping("students")
-    public ModelAndView show() {
+    public ModelAndView show(@RequestParam(defaultValue = "0") int page) throws Exception {
         ModelAndView modelAndView = new ModelAndView("show");
-        List<Student> students = (List<Student>) iStudentRepo.findAll();
+        Page<Student> students = iStudentRepo.findAll(PageRequest.of(page, 5, Sort.by("age")));
         modelAndView.addObject("students", students);
-        return modelAndView;
+        throw new Exception("lỗi rồi Phong ơi");
     }
 
     @ModelAttribute(name = "classRooms")
@@ -43,9 +51,19 @@ public class StudentController {
         return modelAndView;
     }
 
+    @ExceptionHandler(Exception.class)
+    public String handleError(Exception e, Model model) {
+        model.addAttribute("mess",e.getMessage());
+       return "error";
+    }
+
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("student") Student student, @RequestParam long id_ClassRoom) {
+    public String create(@Valid @ModelAttribute("student") Student student, BindingResult bindingResult, @RequestParam long id_ClassRoom) {
+        validateStudent.validate(student, bindingResult);
+        if (bindingResult.hasFieldErrors()) {
+            return "create";
+        }
         ClassRoom classRoom = iClassRoomRepo.findById(id_ClassRoom).get();
         student.setClassRoom(classRoom);
         iStudentRepo.save(student);
